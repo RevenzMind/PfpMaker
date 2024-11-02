@@ -1,0 +1,243 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Welcome to Astro.">
+  <main>
+    <div class="container">
+      <div class="canvas-container">
+        <canvas id="myCanvas" width="500" height="500"></canvas>
+      </div>
+      <div class="options">
+        <div class="option">
+          <label for="ImageUpload">Upload Image:</label>
+          <input type="file" id="ImageUpload" name="ImageUpload" accept="image/*">
+        </div>
+        <div class="option">
+          <label for="borderColor">Border Color:</label>
+          <input type="color" id="borderColor" name="borderColor">
+        </div>
+        <div class="option">
+          <label for="borderThickness">Border Thickness:</label>
+          <input type="number" id="borderThickness" name="borderThickness" min="1" max="50" value="30">
+        </div>
+        <div class="option">
+          <label for="borderShape">Border Shape:</label>
+          <select id="borderShape" name="borderShape">
+            <option value="square">Square (1)</option>
+            <option value="circle">Circle (2)</option>
+          </select>
+        </div>
+        <div class="option">
+          <label for="zoomLevel">Zoom Level:</label>
+          <input type="range" id="zoomLevel" name="zoomLevel" min="1" max="3" step="0.1" value="1">
+        </div>
+        <div class="option">
+          <label for="horizontalPosition">Horizontal Position:</label>
+          <input type="range" id="horizontalPosition" name="horizontalPosition" min="-1" max="1" step="0.1" value="0">
+        </div>
+        <div class="option">
+          <label for="verticalPosition">Vertical Position:</label>
+          <input type="range" id="verticalPosition" name="verticalPosition" min="-1" max="1" step="0.1" value="0">
+        </div>
+        <div class="option">
+          <button id="downloadButton" disabled>Download Image</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f3f3;
+    margin: 0;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    width: 100%;
+  }
+
+  .canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e5e5e5;
+    border-radius: 10px;
+    padding: 10px;
+    border: 2px dashed #ccc;
+  }
+
+  canvas {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: white;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .option {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .option label {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .option input, .option select, .option button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+
+  .option input[type="file"] {
+    padding: 5px;
+  }
+
+  .option button {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .option button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .option button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  const $ = (selector: any) => document.querySelector(selector);
+  const canvas = $("#myCanvas");
+  const ctx = canvas.getContext("2d");
+  const ImageUpload = $("#ImageUpload");
+  const downloadButton = $("#downloadButton");
+
+  let img = new Image();
+  let zoomLevel = 1;
+  let horizontalPosition = 0;
+  let verticalPosition = 0;
+
+  ImageUpload.addEventListener("change", (e: any) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (typeof e.target?.result === 'string') {
+        img.src = e.target.result;
+      }
+      img.onload = () => {
+        draw();
+        downloadButton.disabled = false;
+      };
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const borderColorInput = $("#borderColor");
+  const borderThicknessInput = $("#borderThickness");
+  const borderShapeInput = $("#borderShape"); 
+  const zoomLevelInput = $("#zoomLevel");
+  const horizontalPositionInput = $("#horizontalPosition");
+  const verticalPositionInput = $("#verticalPosition");
+
+  borderColorInput.addEventListener('input', draw);
+  borderThicknessInput.addEventListener('input', draw);
+  borderShapeInput.addEventListener('change', draw);
+  zoomLevelInput.addEventListener('input', (e: any) => {
+    zoomLevel = e.target.value;
+    draw();
+  });
+  horizontalPositionInput.addEventListener('input', (e: any) => {
+    horizontalPosition = e.target.value;
+    draw();
+  });
+  verticalPositionInput.addEventListener('input', (e: any) => {
+    verticalPosition = e.target.value;
+    draw();
+  });
+
+  downloadButton.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'canvas-image.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+
+  function draw() {
+    const borderColor = borderColorInput.value;
+    const borderThickness = borderThicknessInput.value;
+    const borderShape = borderShapeInput.value;
+
+    const canvasSize = 500;
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (borderShape === 'circle') {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - borderThickness / 2, 0, Math.PI * 2);
+      ctx.clip();
+    }
+
+    if (img.src) {
+      const aspectRatio = img.width / img.height;
+      let drawWidth, drawHeight;
+
+      if (aspectRatio > 1) {
+        drawWidth = canvasSize * zoomLevel;
+        drawHeight = (canvasSize / aspectRatio) * zoomLevel;
+      } else {
+        drawHeight = canvasSize * zoomLevel;
+        drawWidth = (canvasSize * aspectRatio) * zoomLevel;
+      }
+
+      const offsetX = (canvasSize - drawWidth) / 2 + (horizontalPosition * (canvasSize - drawWidth) / 2);
+      const offsetY = (canvasSize - drawHeight) / 2 + (verticalPosition * (canvasSize - drawHeight) / 2);
+
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    }
+
+    if (borderShape === 'circle') {
+      ctx.restore();
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - borderThickness / 2, 0, Math.PI * 2);
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = borderThickness;
+      ctx.stroke();
+    } else {
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = borderThickness;
+      ctx.strokeRect(borderThickness / 2, borderThickness / 2, canvas.width - borderThickness, canvas.height - borderThickness);
+    }
+  }
+</script>
