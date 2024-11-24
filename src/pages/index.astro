@@ -2,30 +2,36 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Pfp Outliner">
   <main>
     <div class="container">
       <div class="canvas-container">
-        <canvas id="myCanvas" width="500" height="500"></canvas>
+        <canvas id="myCanvas" width="500" height="500">
+        </canvas>
       </div>
       <div class="options">
         <div class="option">
           <label for="ImageUpload">Upload Image:</label>
-          <input type="file" id="ImageUpload" name="ImageUpload" accept="image/*">
+
+          <label for="ImageUpload" class="InputContainerImage">
+            <img src="/public/icons/upload.svg"/>
+            <p>Upload image</p>
+          </label>
+          <input type="file" id="ImageUpload" name="ImageUpload" accept="image/*" style="display: none;">
         </div>
         <div class="option">
           <label for="borderColor">Border Color:</label>
-          <input type="color" id="borderColor" name="borderColor">
+            <input type="color" id="borderColor" name="borderColor" value="#ffffff">
         </div>
         <div class="option">
           <label for="borderThickness">Border Thickness:</label>
           <input type="number" id="borderThickness" name="borderThickness" min="1" max="50" value="30">
         </div>
         <div class="option">
-          <label for="borderShape">Border Shape:</label>
-          <select id="borderShape" name="borderShape">
-            <option value="square">Square (1)</option>
-            <option value="circle">Circle (2)</option>
+          <label for="borderShape">Border Crop:</label>
+          <select id="borderShape"  name="borderShape">
+            <option value="square">Square</option>
+            <option value="circle" selected>Circle</option>
           </select>
         </div>
         <div class="option">
@@ -49,49 +55,56 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  main{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f3f3f3;
+    width: 100%;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+		justify-content: center;
+		align-items: center;
+ 
     margin: 0;
   }
 
   .container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    background: white;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100vw;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
-    width: 100%;
+    align-items: center;
   }
 
   .canvas-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #e5e5e5;
     border-radius: 10px;
     padding: 10px;
-    border: 2px dashed #ccc;
+    border: 2px #27272a;
   }
 
   canvas {
-    border: 1px solid #ccc;
+    border: 1px solid #27272a;
     border-radius: 10px;
-    background: white;
+    background: #09090b;
+    width: 100%;
+    max-width: 500px;
+    height: auto;
   }
 
   .options {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 15px;
+    align-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    justify-items: stretch;
   }
 
   .option {
@@ -99,39 +112,120 @@ import Layout from "../layouts/Layout.astro";
     flex-direction: column;
     gap: 5px;
   }
+#ImageUpload {
+  display: none;
+}
 
-  .option label {
-    font-weight: bold;
-    color: #333;
-  }
+.InputContainerImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #c0c0c0;
+  border: 1px solid #27272a;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
 
-  .option input, .option select, .option button {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
 
-  .option input[type="file"] {
-    padding: 5px;
-  }
 
-  .option button {
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
+.InputContainerImage:hover,
+.option input:hover, 
+.option select:hover, 
+.option button:hover {
+  background: #27272a;
+}
 
-  .option button:disabled {
+.InputContainerImage p,
+.option label {
+  user-select: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: #c0c0c0;
+}
+
+.option input, 
+.option select, 
+.option button {
+  padding: 10px;
+  background: #09090b;
+  color: #c0c0c0;
+  border: 1px solid #27272a;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.1s ease;
+}
+
+.option button {
+  cursor: pointer;
+  background-color: #f1f1f1;
+  color: rgb(5, 5, 5);
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.option button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
   }
 
   .option button:hover:not(:disabled) {
+    background-color: #afafaf;
+  }
+  #myCanvas{
+    background: #09090b url('/public/icons/media-image-plus.svg') no-repeat center center;
+    background-size: 100px;
+
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #09090b;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  .downloadButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .downloadButton:hover {
     background-color: #0056b3;
   }
+ @media screen and (max-width: 1000px) {
+    .container {
+      flex-direction: column;
+
+    }
+    .options {
+      width: 100vw;
+    }
+    .canvas-container {
+        padding: 5px;
+        margin-top: 250px;
+
+    }
+
+    canvas {
+        width: 100%;
+        height: auto;
+    }
+
+    .options {
+        width: 100%;
+    }
+  
+ }
 </style>
 
 <script>
