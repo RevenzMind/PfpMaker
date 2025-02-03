@@ -319,7 +319,7 @@ import Layout from "../layouts/Layout.astro";
   flagSelectInput.addEventListener('change', (e: any) => {
     const flag = e.target.value;
     if (flag === "lgbtqi") {
-      flagImage.src = "/path/to/lgbtqi/flag/image"; // Update with the actual path to the flag image
+      flagImage.src = "/icons/lgbtqi-flag.png"; // Update with the actual path to the flag image
     }
     flagImage.onload = draw;
   });
@@ -391,8 +391,19 @@ import Layout from "../layouts/Layout.astro";
         ctx.lineWidth = borderThickness;
         ctx.strokeRect(borderThickness / 2, borderThickness / 2, canvas.width - borderThickness, canvas.height - borderThickness);
       }
-    } else if (borderType === "flag" && flagImage.src) {
-      ctx.drawImage(flagImage, 0, 0, canvas.width, canvas.height);
+    } else if (borderType === "flag") {
+      if (borderShape === 'circle') {
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - borderThickness / 2, 0, Math.PI * 2);
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = borderThickness;
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = borderThickness;
+        ctx.strokeRect(borderThickness / 2, borderThickness / 2, canvas.width - borderThickness, canvas.height - borderThickness);
+      }
     } else if (borderType === "custom" && customBorderImage.src) {
       ctx.drawImage(customBorderImage, 0, 0, canvas.width, canvas.height);
     }
