@@ -396,13 +396,10 @@ import Layout from "../layouts/Layout.astro";
         ctx.restore();
         ctx.beginPath();
         ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - borderThickness / 2, 0, Math.PI * 2);
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = borderThickness;
-        ctx.stroke();
+        ctx.clip();
+        ctx.drawImage(flagImage, 0, 0, canvas.width, canvas.height);
       } else {
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = borderThickness;
-        ctx.strokeRect(borderThickness / 2, borderThickness / 2, canvas.width - borderThickness, canvas.height - borderThickness);
+        ctx.drawImage(flagImage, 0, 0, canvas.width, canvas.height);
       }
     } else if (borderType === "custom" && customBorderImage.src) {
       ctx.drawImage(customBorderImage, 0, 0, canvas.width, canvas.height);
