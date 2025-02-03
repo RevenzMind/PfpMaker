@@ -52,3 +52,17 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## 🌈 New Feature: Flag or Custom Image Border
+
+We have added a new feature that allows you to use a flag (such as LGBTQI) or a custom image as the border for your profile picture. Follow the instructions below to use this feature:
+
+1. **Select Border Type**: In the options section, find the "Border Type" dropdown. You can choose between "Solid Color", "Flag (LGBTQI)", or "Custom Image".
+
+2. **Select Flag**: If you choose "Flag (LGBTQI)" as the border type, a new dropdown will appear allowing you to select the specific flag you want to use. Currently, the available option is "LGBTQI".
+
+3. **Upload Custom Image**: If you choose "Custom Image" as the border type, a new file input will appear allowing you to upload your custom image to be used as the border.
+
+4. **Adjust Other Options**: You can still adjust other options such as border thickness, border shape, zoom level, and image position.
+
+5. **Download Image**: Once you are satisfied with your profile picture, click the "Download Image" button to save it to your device.

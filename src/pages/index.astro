@@ -47,6 +47,25 @@ import Layout from "../layouts/Layout.astro";
           <input type="range" id="verticalPosition" name="verticalPosition" min="-1" max="1" step="0.1" value="0">
         </div>
         <div class="option">
+          <label for="borderType">Border Type:</label>
+          <select id="borderType" name="borderType">
+            <option value="solid" selected>Solid Color</option>
+            <option value="flag">Flag (LGBTQI)</option>
+            <option value="custom">Custom Image</option>
+          </select>
+        </div>
+        <div class="option" id="flagOption" style="display: none;">
+          <label for="flagSelect">Select Flag:</label>
+          <select id="flagSelect" name="flagSelect">
+            <option value="lgbtqi" selected>LGBTQI</option>
+            <!-- Add more flag options here -->
+          </select>
+        </div>
+        <div class="option" id="customImageOption" style="display: none;">
+          <label for="customImageUpload">Upload Custom Image:</label>
+          <input type="file" id="customImageUpload" name="customImageUpload" accept="image/*">
+        </div>
+        <div class="option">
           <button id="downloadButton" disabled>Download Image</button>
         </div>
       </div>
@@ -239,6 +258,9 @@ import Layout from "../layouts/Layout.astro";
   let zoomLevel = 1;
   let horizontalPosition = 0;
   let verticalPosition = 0;
+  let borderType = "solid";
+  let flagImage = new Image();
+  let customBorderImage = new Image();
 
   ImageUpload.addEventListener("change", (e: any) => {
     const file = e.target.files[0];
@@ -261,6 +283,9 @@ import Layout from "../layouts/Layout.astro";
   const zoomLevelInput = $("#zoomLevel");
   const horizontalPositionInput = $("#horizontalPosition");
   const verticalPositionInput = $("#verticalPosition");
+  const borderTypeInput = $("#borderType");
+  const flagSelectInput = $("#flagSelect");
+  const customImageUploadInput = $("#customImageUpload");
 
   borderColorInput.addEventListener('input', draw);
   borderThicknessInput.addEventListener('input', draw);
@@ -276,6 +301,38 @@ import Layout from "../layouts/Layout.astro";
   verticalPositionInput.addEventListener('input', (e: any) => {
     verticalPosition = e.target.value;
     draw();
+  });
+  borderTypeInput.addEventListener('change', (e: any) => {
+    borderType = e.target.value;
+    if (borderType === "flag") {
+      $("#flagOption").style.display = "block";
+      $("#customImageOption").style.display = "none";
+    } else if (borderType === "custom") {
+      $("#flagOption").style.display = "none";
+      $("#customImageOption").style.display = "block";
+    } else {
+      $("#flagOption").style.display = "none";
+      $("#customImageOption").style.display = "none";
+    }
+    draw();
+  });
+  flagSelectInput.addEventListener('change', (e: any) => {
+    const flag = e.target.value;
+    if (flag === "lgbtqi") {
+      flagImage.src = "/path/to/lgbtqi/flag/image"; // Update with the actual path to the flag image
+    }
+    flagImage.onload = draw;
+  });
+  customImageUploadInput.addEventListener('change', (e: any) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (typeof e.target?.result === 'string') {
+        customBorderImage.src = e.target.result;
+      }
+      customBorderImage.onload = draw;
+    };
+    reader.readAsDataURL(file);
   });
 
   downloadButton.addEventListener('click', () => {
@@ -321,17 +378,23 @@ import Layout from "../layouts/Layout.astro";
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     }
 
-    if (borderShape === 'circle') {
-      ctx.restore();
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - borderThickness / 2, 0, Math.PI * 2);
-      ctx.strokeStyle = borderColor;
-      ctx.lineWidth = borderThickness;
-      ctx.stroke();
-    } else {
-      ctx.strokeStyle = borderColor;
-      ctx.lineWidth = borderThickness;
-      ctx.strokeRect(borderThickness / 2, borderThickness / 2, canvas.width - borderThickness, canvas.height - borderThickness);
+    if (borderType === "solid") {
+      if (borderShape === 'circle') {
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - borderThickness / 2, 0, Math.PI * 2);
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = borderThickness;
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = borderThickness;
+        ctx.strokeRect(borderThickness / 2, borderThickness / 2, canvas.width - borderThickness, canvas.height - borderThickness);
+      }
+    } else if (borderType === "flag" && flagImage.src) {
+      ctx.drawImage(flagImage, 0, 0, canvas.width, canvas.height);
+    } else if (borderType === "custom" && customBorderImage.src) {
+      ctx.drawImage(customBorderImage, 0, 0, canvas.width, canvas.height);
     }
   }
 </script>
